@@ -16,7 +16,7 @@ Bouncer is written in Python using the [discord.py](https://github.com/Rapptz/di
 ### A note on playing around with Bouncer yourself
 If you want to try your hand at improving Bouncer or writing your own bot, you will need to register a bot via the [Discord Developer Portal](https://discord.com/developers/applications). For an in-depth tutorial on how to setup and write a Discord bot, try [this piece from Real Python](https://realpython.com/how-to-make-a-discord-bot-python/).
 
-Critical information such as the bot's token has been obfuscated in the `info.py` file, which is not uploaded to this repository. In order to run the bot yourself, you will need to provide it with your own version of `info.py`'s `Info` object, the definition of which can be found below. Because I use two separate bot identities to allow for testing, `Info` can be initialized for either testing or live deployment.
+Critical information such as the bot's token has been obfuscated in the `info.py` file, which is not uploaded to this repository. **In order to run the bot yourself, you will need to provide it with your own version of `info.py`'s `Info` object,** the definition of which can be found below. Because I use two separate bot identities to allow for testing, `Info` can be initialized for either testing or live deployment.
 
 ```Python
 class Info:
