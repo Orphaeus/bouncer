@@ -1,4 +1,3 @@
-from time import time
 import discord
 from discord.errors import HTTPException
 from discord.ext import tasks
@@ -19,15 +18,14 @@ DEFAULT_ROLE_ID = info.default_role_id
 REMINDER_CHANNEL = info.reminder_channel
 CLASSLIST_PATH = info.classlist_path
 
+# Misc constants
 TZINFO = dt.timezone(-dt.timedelta(hours=4)) # EDT
 PRUNE_WARNING_DAYS = 60 # Warn members about pruning after this many days absent
 PRUNE_GRACE_DAYS = 3 # Prune members this many days absent after warning
 PRUNE_DAYS = PRUNE_WARNING_DAYS + PRUNE_GRACE_DAYS # Prune members after this many days absent
-
-intents = discord.Intents().all()
-client = discord.Client(intents=intents)
-
-classlist = pd.read_csv(CLASSLIST_PATH)
+CLASSLIST = pd.read_csv(CLASSLIST_PATH)
+INTENTS = discord.Intents().all()
+client = discord.Client(intents=INTENTS)
 
 
 @client.event
@@ -50,8 +48,13 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member:discord.Member):
-	# On new member join, assign them the default role so we know their nick has not been set
+	'''
+	On new member join, assign them the default role so we know their nick has not been set
+	'''
+	# Log the event
 	await send_dm(ben, messages.Logs.new_member(member), to_console=True)
+
+	# Add the role
 	try:
 		await member.add_roles(default_role, reason="Add default role")
 	except HTTPException as exc:
@@ -70,7 +73,10 @@ async def on_member_join(member:discord.Member):
 
 @client.event
 async def on_member_update(before:discord.Member, after:discord.Member):
-	# Make sure this user has the default role and that it was their nickname that changed
+	'''
+	Make sure this user has the default role and that it was their nickname that changed
+	'''
+
 	if default_role in before.roles and before.nick != after.nick:
 		# Log the name change
 		await send_dm(ben, messages.Logs.nick_changed(before, after), to_console=True)
@@ -89,11 +95,18 @@ async def on_member_update(before:discord.Member, after:discord.Member):
 
 @client.event
 async def on_presence_update(before:discord.Member, after:discord.Member):
-	# Update this member's "last_online" column in status_logs
+	'''
+	Update this member's "last_online" column in status_logs
+	'''
+	
 	statuslogger.update_record(after.name)
 
 
 async def send_dm(recipient:discord.Member, msg:str, to_console=False):
+	'''
+	Handles sending DMs to users.
+	'''
+
 	# Print the message to the console if True
 	if to_console:
 		print(msg)
@@ -117,6 +130,10 @@ async def send_dm(recipient:discord.Member, msg:str, to_console=False):
 
 
 async def validate_name(member:discord.Member):
+	'''
+	Check the member's nickname against the classlist to see if it is present.
+	'''
+
 	# If no nickname, use name
 	s = ''
 	if member.nick == None:
@@ -134,13 +151,13 @@ async def validate_name(member:discord.Member):
 	# Search classlist for a first and last name that are in s
 	match_found = False
 	match_row = ''
-	for lastname in classlist["last"]:
+	for lastname in CLASSLIST["last"]:
 		if lastname in alpha_s:
 			# Search the first names associated with this last name
-			for firstname in classlist.loc[classlist["last"] == lastname]["first"]:
+			for firstname in CLASSLIST.loc[CLASSLIST["last"] == lastname]["first"]:
 				if firstname in alpha_s:
 					match_found = True
-					match_row = classlist.loc[(classlist["first"] == firstname) & (classlist["last"] == lastname)]
+					match_row = CLASSLIST.loc[(CLASSLIST["first"] == firstname) & (CLASSLIST["last"] == lastname)]
 					break
 	
 	# Return match state
@@ -151,7 +168,10 @@ async def validate_name(member:discord.Member):
 
 
 async def approve_member(member:discord.Member):
-	# Remove the default role from the member
+	'''
+	Remove the default role from the member.
+	'''
+	
 	try:
 		await member.remove_roles(default_role, reason="Member approved")
 		# Notify them and log the approval
