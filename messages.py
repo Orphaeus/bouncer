@@ -4,12 +4,9 @@ Module for constructing all messages sent to either Discord or the console outpu
 
 import discord
 from discord.errors import HTTPException
-
 from info import Info
 
 
-BEN_EMAIL = ''
-BEN_DISCORD = ''
 NICK_HELP_MSG = 'https://discord.com/channels/750102333987356682/750142461514481664/818541647661891594' 
 
 
