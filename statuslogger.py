@@ -56,7 +56,6 @@ def get_lapsed_members(warn_days:int, prune_days:int):
 	prune_members = []
 	for index in status_logs.index:
 		row = status_logs.iloc[index]
-		print(type(row["last_online"]))
 		date_parts = [int(char) for char in row["last_online"][:10].split('-')]
 		diff = datetime.now().date() - datetime(date_parts[0], date_parts[1], date_parts[2]).date()
 		if diff == timedelta(warn_days):
