@@ -11,6 +11,7 @@ import info
 # Initialize the bot's private and mode-dependent data
 info = info.Info("test")
 messages.initialize(info)
+statuslogger.initialize(info)
 
 TOKEN = info.token
 GUILD_ID = info.guild_id
@@ -186,7 +187,7 @@ async def approve_member(member:discord.Member):
 async def daily_tasks():
 	# Run at specific time not an option until next version, so get hacky
 	now = dt.datetime.now().time()
-	if not (now.hour == 12 and now.minute == 0 and now.second == 0):
+	if not (now.hour == 8 and now.minute == 51 and now.second == 30):
 		return
 
 	# NICKNAME REMINDER
