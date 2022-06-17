@@ -186,9 +186,10 @@ async def approve_member(member:discord.Member):
 @tasks.loop(seconds=1)
 async def daily_tasks():
 	# Run at specific time not an option until next version, so get hacky
-	now = dt.datetime.now().time()
-	if not (now.hour == 8 and now.minute == 51 and now.second == 30):
+	now = dt.datetime.now(tz=TZINFO).time()
+	if not (now.hour == 16 and now.minute == 10 and now.second == 0):
 		return
+	print("asdf")
 
 	# NICKNAME REMINDER
 	# Clear the previous reminders
