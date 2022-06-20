@@ -101,6 +101,7 @@ async def on_presence_update(before:discord.Member, after:discord.Member):
 	'''
 	
 	statuslogger.update_record(after.name)
+	print(f"---{after.name} presence now {after.status}")
 
 
 async def send_dm(recipient:discord.Member, msg:str, to_console=False):
@@ -134,7 +135,7 @@ async def validate_name(member:discord.Member):
 	'''
 	Check the member's nickname against the classlist to see if it is present.
 	'''
-
+	
 	# If no nickname, use name
 	s = ''
 	if member.nick == None:
@@ -143,20 +144,16 @@ async def validate_name(member:discord.Member):
 		s = member.nick
 
 	# Make s lowercase and remove non-alphabetical characters
-	alpha_s = s.lower()
-	if not s.isalpha():
-		for c in s:
-			if not c.isalpha():
-				alpha_s = alpha_s.replace(c, '')
+	s_lower_alpha = lower_alpha(s)
 	
 	# Search classlist for a first and last name that are in s
 	match_found = False
-	match_row = ''
+	match_row = pd.DataFrame()
 	for lastname in CLASSLIST["last"]:
-		if lastname in alpha_s:
+		if lower_alpha(lastname) in s_lower_alpha:
 			# Search the first names associated with this last name
 			for firstname in CLASSLIST.loc[CLASSLIST["last"] == lastname]["first"]:
-				if firstname in alpha_s:
+				if lower_alpha(firstname) in s_lower_alpha:
 					match_found = True
 					match_row = CLASSLIST.loc[(CLASSLIST["first"] == firstname) & (CLASSLIST["last"] == lastname)]
 					break
@@ -182,14 +179,22 @@ async def approve_member(member:discord.Member):
 		print(messages.Logs.exception(exc, 'member.remove_roles'))
 
 
+def lower_alpha(s:str) -> str:
+	s_clean = s.lower()
+	if not s.isalpha():
+		for c in s:
+			if not c.isalpha():
+				s_clean = s_clean.replace(c, '')
+	return s_clean
+
+
 #@tasks.loop(time=dt.time(hour=12, minute=0, second=0, tzinfo=TZINFO)) # Run at noon EDT (will not work until next version of discord.py)
 @tasks.loop(seconds=1)
 async def daily_tasks():
 	# Run at specific time not an option until next version, so get hacky
 	now = dt.datetime.now(tz=TZINFO).time()
-	if not (now.hour == 16 and now.minute == 10 and now.second == 0):
+	if not (now.hour == 12 and now.minute == 0 and now.second == 0):
 		return
-	print("asdf")
 
 	# NICKNAME REMINDER
 	# Clear the previous reminders
@@ -221,3 +226,4 @@ async def daily_tasks():
 
 
 client.run(TOKEN)
+
