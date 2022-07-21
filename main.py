@@ -2,14 +2,23 @@ import discord
 from discord.errors import HTTPException
 from discord.ext import tasks
 import datetime as dt
+from os import path
 import pandas as pd
 import messages
 import statuslogger
 import info
 
 
-# Initialize the bot's private and mode-dependent data
-info = info.Info("test")
+# Determine location to set state
+state = ''
+if path.exists('Bot1/ds_classlist.csv'):
+	state = "live"
+else:
+	state = "test"
+print(messages.Logs.confirm_state(state))
+
+# Initialize the bot's private and state-dependent data
+info = info.Info(state)
 messages.initialize(info)
 statuslogger.initialize(info)
 
