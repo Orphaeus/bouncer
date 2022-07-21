@@ -99,7 +99,7 @@ async def on_presence_update(before:discord.Member, after:discord.Member):
 	'''
 	Update this member's "last_online" column in status_logs
 	'''
-	
+	# RIP this only exists in v2.0
 	statuslogger.update_record(after.name)
 	print(f"---{after.name} presence now {after.status}")
 
@@ -188,10 +188,10 @@ def lower_alpha(s:str) -> str:
 	return s_clean
 
 
-#@tasks.loop(time=dt.time(hour=12, minute=0, second=0, tzinfo=TZINFO)) # Run at noon EDT (will not work until next version of discord.py)
+#@tasks.loop(time=dt.time(hour=12, minute=0, second=0, tzinfo=TZINFO)) # Run at noon EDT (v2.0 only)
 @tasks.loop(seconds=1)
 async def daily_tasks():
-	# Run at specific time not an option until next version, so get hacky
+	# Run at specific time not an option until v2.0, so get hacky
 	now = dt.datetime.now(tz=TZINFO).time()
 	if not (now.hour == 12 and now.minute == 0 and now.second == 0):
 		return
@@ -205,6 +205,9 @@ async def daily_tasks():
 	# Send the new reminder
 	await channel.send(messages.Bouncer.nickname_reminder(default_role, ben))
 
+
+	# Disable prune functionality until I can be bothered to debug it :/
+	return
 	# PRUNE REMINDER
 	warn_members, prune_members = statuslogger.get_lapsed_members(PRUNE_WARNING_DAYS, PRUNE_DAYS)
 	for name in warn_members:
