@@ -9,7 +9,7 @@ import statuslogger
 import info
 
 
-# Determine location to set state
+# Determine execute location to set state
 state = ''
 if path.exists('Bot1/ds_classlist.csv'):
 	state = "live"
