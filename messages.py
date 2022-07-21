@@ -52,6 +52,11 @@ class Logs:
 	def approval(member:discord.Member):
 		msg = f"Approved member {member} (Nickname '{member.nick}')."
 		return msg
+	
+	@staticmethod
+	def confirm_state(state:str):
+		msg = f"Initializing 'main.py' as {state.upper()}"
+		return msg
 
 	@staticmethod
 	def connect(user:discord.ClientUser, guild:discord.Guild):
